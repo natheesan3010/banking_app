@@ -2,9 +2,6 @@
 
 # user details
 def user():
-    #username = "admin"
-    #password = "1234"
-
     # asking  information  user
     name = input("Enter the user Name : ")
     password = input("Enter the password: ")
@@ -102,8 +99,8 @@ def transaction_history():
         acc_no = int(input("Enter Account Number: "))
         if acc_no in accounts:
             print("Transaction History:")
-            for txn in accounts[acc_no]['transactions']:
-                print(f"- {txn}")
+            for n in accounts[acc_no]['transactions']:
+                print(f"- {n}")
         else:
             print("Account not found.")
     except ValueError:

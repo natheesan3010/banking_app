@@ -1,33 +1,24 @@
-import random
-import os
+# Mini Banking Application using Procedural Programming
+
+# user details
+def user():
+    # asking  information  user
+    name = input("Enter the user Name : ")
+    password = input("Enter the password: ")
+
+    # user name and password checking
+    if True:
+        print("successful login!")
+    else:
+        print("check your user name and password then try again.")
 
 accounts = {}
- # Auto-generated account number
-acc_no = 1001 
+next_account_number = 1001  # Auto-generated account number
 
-
-
-# auto id
-def create_id(id):
-    return id + str(random.randint(1000, 9999))
-
-# Register function
+# Create Account
 def create_account():
-    username = input("Enter a new username: ")
-    password = input("Enter a new password: ")
-
-    user_id = create_id("u_id")
-    customer_id = create_id("C_ID")
-
-    #save acccount details in file
-    with open("account.txt", "a") as file:
-        file.write(f"{acc_no},{username},{password},{user_id},{customer_id}\n")
-
-    print("Registered successfully!")
-    print(f"Your User ID: {user_id}")
-    print(f"Your Customer ID: {customer_id}")
-
-    
+    global next_account_number
+    user()
     name = input("Account Holder Name: ")
     try:
         balance = float(input("Initial Deposit Amount: "))
@@ -36,58 +27,63 @@ def create_account():
             return
     except ValueError:
         print("Invalid amount entered.")
-    
-    #save in file
-    with open("trancetion.txt", "a") as file:
-        file.write(f"{acc_no},{user_id},{balance}\n")
+        return
 
-    return
-
-  
-    acc_no += 1
-    #global name,balance
+    acc_no = next_account_number
+    next_account_number += 1
     accounts[acc_no] = {
-        "name": name,
-        "balance": balance,
-        trancetion: [f"Initial deposit: {balance}"]
+        'name': name,
+        'balance': balance,
+        'transactions': [f"Initial deposit: {balance}"]
     }
     print(f"Account created successfully! Account Number: {acc_no}")
-    
-    #save in file
-    with open("balance.txt", "a") as file:
-        file.write(f"{acc_no},{name},{customer_id},{balance}\n")
+
+    #save acccount details in file
+    with open("account.txt", "w") as file:
+        file.write(f"{acc_no},{name}\n")
 
 
-# Usermenu
-def creat_menu():
-    while True:
-        print("===USERS ACCOUNT===")
-        print("1. Register")
-        #print("2. Login")
-        print("2. Exit")
-        choice = input("Enter your choice : ")
+# Deposit Money
+def deposit_money ():
+    user()
+    try:
+        acc_no = int(input("Enter Account Number: "))
+        if acc_no not in accounts:
+            print("Account not found.")
+            return
+        amount = float(input("Deposit Amount: "))
+        if amount <= 0:
+            print("Amount should be positive.")
+            return
+        accounts[acc_no]['balance'] += amount
+        accounts[acc_no]['transactions'].append(f"Deposited: {amount}")
+        print("Deposit successful.")
+    except ValueError:
+        print("Invalid input.")
 
-        if choice == '1':
-           create_account()
-        #elif choice == '2':
-        #    login()
-        elif choice == '2':
-            print("Thank you!")
-            break
-        else:
-            print("Invalid choice! Try again.")
+# Withdraw Money
+def withdraw_money():
+    user()
+    try:
+        acc_no = int(input("Enter Account Number: "))
+        if acc_no not in accounts:
+            print("Account not found.")
+            return
+        amount = float(input("Withdrawal Amount: "))
+        if amount <= 0:
+            print("Amount must positive.")
+            return
+        if amount > accounts[acc_no]['balance']:
+            print(".")
+            return
+        accounts[acc_no]['balance'] -= amount
+        accounts[acc_no]['transactions'].append(f"Withdrawn: {amount}")
+        print("Withdrawal successful.")
+    except ValueError:
+        print("Invalid input.")
 
-'''
-#deposit fountion
-def deposit ():
-    while
-
-#withdraw fountion
-def withdraw ():
-    while
-'''
-#balance fountion
-def balance ():
+# Check Balance
+def check_balance():
     try:
         acc_no = int(input("Enter Account Number: "))
         if acc_no in accounts:
@@ -97,53 +93,49 @@ def balance ():
     except ValueError:
         print("Invalid account number.")
 
-#trancetion fountion
-def trancetion ():
-    global balance
+# Transaction History
+def transaction_history():
     try:
         acc_no = int(input("Enter Account Number: "))
         if acc_no in accounts:
-            print("Trancetion History:")
-            for i in accounts[acc_no]:
-                print(f"- {i}")
+            print("Transaction History:")
+            for n in accounts[acc_no]['transactions']:
+                print(f"- {n}")
         else:
             print("Account not found.")
     except ValueError:
         print("Invalid account number.")
 
-    #save in file
-    #with open("trancetion.txt", "r") as file:
-        #file.write(f"{acc_no},{balance}\n")
-
-
-
-
-#banking main menu
-def main_menu():
+# Menu-driven interface
+def menu():
     while True:
-        print("=====BANK MAIN MENU=====")
-        print("1. CREAT ACCOUNT")
-        #print("2. DEPOSIT AMOUNT")
-        #print("3. WITHDRAW AMOUNT")
-        print("4. CHECK BALANCE")
-        print("5. VIEW TRANSECTION HISTROY")
-        print("6. EXIT")
-        
-        choice = input("Enter your choice (1 - 6): ")
+        print("\n----- Mini Banking System -----")
+        print("1. Create Account")
+        print("2. Deposit Money")
+        print("3. Withdraw Money")
+        print("4. Check Balance")
+        print("5. Transaction History")
+        print("6. Exit")
+
+        choice = input("Enter your choice (1-6): ")
 
         if choice == '1':
-            creat_menu()
-        #elif choice == '2':
-            #deposit()
-        #elif choice == '3':
-           # withdraw() 
+            create_account()
+        elif choice == '2':
+            deposit_money()
+        elif choice == '3':
+            withdraw_money()
         elif choice == '4':
-            balance()
+            check_balance()
         elif choice == '5':
-            trancetion()
+            transaction_history()
         elif choice == '6':
-            print("Thank You For Banking Us! Have A Nice Day! ")
+            print("Thank you for using the Mini Banking System.")
+            break
         else:
-            print("Invalid choice! Try again!.")
+            print("Invalid choice. Please try again.")
 
-main_menu()
+# Program starts here
+menu()
+
+
