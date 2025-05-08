@@ -32,6 +32,7 @@ def create_account():
     password = input("Enter the password: ")
     name = input("Account Holder Name : ")
     nic = input("Enter your N.I.C_ Number : ")
+    address= input("Enter your address:")
 
     user_id = f"U_{ID}"
     
@@ -53,7 +54,7 @@ def create_account():
     
     # Save account details in account.txt file
     with open("account.txt", "a") as file:
-        file.write(f"{acc_no},{user_id},{name},{nic}\n")
+        file.write(f"{acc_no},{user_id},{name},{nic},{address}\n")
 
 # Deposit Money
 def deposit_money ():
