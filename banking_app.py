@@ -1,44 +1,63 @@
 # Mini Banking Application using Procedural Programming
-
+import random
 
 accounts = {}
-next_account_number = 1001
-  # Auto-generated account number
+ID = random.randint (1000,9999)
+#Auto-generated account number
+
+def login_user():
+    username = input("Enter username: ")
+    password = input("Enter password: ")
+
+    try:
+        with open("users.txt", "r") as file:
+         for line in file:
+                
+                data = line.strip().split(",")
+                if data[0] == username and data[1] == password:
+                    print(f"\nLogin successful! Welcome {username}")
+                    print(f" Account No: {data[3]}\n User ID: {data[2]}\n Password: {data[1]}\n")
+                    return int(data[3]) # account number return 
+                else:
+                    print("Login failed! Invalid username or password.")
+    except FileNotFoundError:
+        print("User file not found.")
+    return None
+
 
 # Create Account
 def create_account():
-    global next_account_number
-    
-    name = input("Enter the user Name : ")
+    global ID
+    username = input("Enter the user Name : ")
     password = input("Enter the password: ")
     name = input("Account Holder Name : ")
     nic = input("Enter your N.I.C_ Number : ")
 
-    try:
-        balance = float(input("Initial Deposit Amount: "))
-        if balance < 0:
-            print("Initial balance cannot be negative.")
-        
-    except ValueError:
-             print("Invalid amount entered.")
-            
+    user_id = f"U_{ID}"
     
-    acc_no = next_account_number
-    next_account_number += 1
+    acc_no = ID
+    ID += 1
+    
+    balance = int(input("Enter The Initial Balance :")) # Default balance
     accounts[acc_no] = {
-            'name': name,
-            'balance': balance,
-            'transaction': [f"Initial deposit: {balance}"]
-        }
+        'name': name,
+        'balance': balance,
+        'transaction': [f"Account created with initial balance: {balance}"]
+    }
     
-    print("Account created successfully! Account Number:",acc_no)
+    # Save user login details in file
+    with open("users.txt", "a") as f:
+        f.write(f"{username},{password},{user_id},{acc_no}\n")
 
-        #save acccount details in file
-    with open("account.txt", "w") as file:
-        file.write(f"{acc_no},{name},{nic}\n")
+    print(f" Account created successfully! \n Account Number: {acc_no} \n user ID :{ID}")
+    
+    # Save account details in account.txt file
+    with open("account.txt", "a") as file:
+        file.write(f"{acc_no},{user_id},{name},{nic}\n")
 
 # Deposit Money
 def deposit_money ():
+    
     try:
         acc_no = int(input("Enter Account Number: "))
         if acc_no not in accounts:
@@ -61,6 +80,7 @@ def deposit_money ():
 
 # Withdraw Money
 def withdraw_money():
+   
     try:
         acc_no = int(input("Enter Account Number: "))
         if acc_no not in accounts:
@@ -140,6 +160,10 @@ def admin_menu():
             print("Invalid choice. Please try again.")
 
 def user_menu ():
+    acc_no = login_user()
+    if acc_no is None:
+        return
+    
     while True:
         print("\n-----USER MENU-----")
         print("1. Deposit Money")
