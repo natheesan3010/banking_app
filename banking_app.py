@@ -4,6 +4,10 @@ import random
 accounts = {}
 ID = random.randint(1000, 9999)
 
+# Admin 
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "admin123"
+
 # Load Accounts from File
 def load_accounts():
     try:
@@ -23,7 +27,7 @@ def load_accounts():
     except FileNotFoundError:
         pass
 
-#save balance in balances.txt file
+# Save balance in balances.txt file
 def save_balance():
     with open("balances.txt", "a") as file:
         for acc_no, data in accounts.items():
@@ -43,6 +47,19 @@ def get_account():
     except ValueError:
         print("Invalid account number.")
     return None
+
+# Admin login function
+def admin_login():
+    print("---- Admin Login ----")
+    username = input("Enter admin username: ")
+    password = input("Enter admin password: ")
+
+    if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+        print("Admin login successful!")
+        return True
+    else:
+        print("Invalid admin credentials.")
+        return False
 
 def login_user():
     username = input("Enter username : ")
@@ -67,13 +84,13 @@ def create_account():
     password = input("Enter the password : ")
     name = input("Account Holder Name : ")
     nic = input("Enter your N.I.C_ Number : ")
-    address= input("Enter your address :")
+    address = input("Enter your address : ")
 
     user_id = f"U_{ID}"
     acc_no = ID
     ID += 1
 
-    balance = int(input("Enter The Initial Balance :"))
+    balance = int(input("Enter The Initial Balance : "))
     accounts[acc_no] = {
         'name': name,
         'balance': balance,
@@ -106,7 +123,6 @@ def deposit_money():
     except ValueError:
         print("Invalid input.")
 
-
 def withdraw_money():
     acc_no = get_account()
     if acc_no is None:
@@ -127,12 +143,10 @@ def withdraw_money():
     except ValueError:
         print("Invalid input.")
 
-
 def check_balance():
     acc_no = get_account()
     if acc_no is not None:
         print(f"Current Balance: {accounts[acc_no]['balance']}")
-
 
 def transaction_history():
     acc_no = get_account()
@@ -141,7 +155,7 @@ def transaction_history():
         for n in accounts[acc_no]['transaction']:
             print(f"- {n}")
 
-#addmin interface
+# Admin interface
 def admin_menu():
     while True:
         print("\n-----ADMIN MENU-----")
@@ -152,7 +166,7 @@ def admin_menu():
         print("5. Transaction History")
         print("6. Exit")
 
-        choice = input("Enter your choice (1-6): \n ")
+        choice = input(f"Enter your choice (1-6): \n ")
 
         if choice == '1':
             create_account()
@@ -171,7 +185,7 @@ def admin_menu():
         else:
             print("Invalid choice. Please try again.")
 
-#user interface
+# User interface
 def user_menu():
     acc_no = login_user()
     if acc_no is None:
@@ -185,7 +199,7 @@ def user_menu():
         print("4. Transaction History")
         print("5. Exit")
 
-        choice = input("Enter your choice (1-5): \n")
+        choice = input(f"Enter your choice (1-5): \n")
 
         if choice == '1':
             deposit_money()
@@ -202,7 +216,7 @@ def user_menu():
         else:
             print("Invalid choice. Please try again.")
 
-#app user interface
+# App user interface
 def bank_app():
     load_accounts()
     while True:
@@ -211,10 +225,11 @@ def bank_app():
         print("2. USER MENU")
         print("3. Exit")
 
-        choice = input("Enter your choice (1-3): \n")
+        choice = input(f"Enter your choice (1-3): \n")
 
         if choice == '1':
-            admin_menu()
+            if admin_login():
+                admin_menu()
         elif choice == '2':
             user_menu()
         elif choice == '3':
@@ -224,5 +239,5 @@ def bank_app():
         else:
             print("Invalid choice. Please try again.")
 
-#start app
+# Start app
 bank_app()
