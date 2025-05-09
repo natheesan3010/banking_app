@@ -45,8 +45,8 @@ def get_account():
     return None
 
 def login_user():
-    username = input("Enter username: ")
-    password = input("Enter password: ")
+    username = input("Enter username : ")
+    password = input("Enter password : ")
 
     try:
         with open("users.txt", "r") as file:
@@ -64,10 +64,10 @@ def login_user():
 def create_account():
     global ID
     username = input("Enter the user Name : ")
-    password = input("Enter the password: ")
+    password = input("Enter the password : ")
     name = input("Account Holder Name : ")
     nic = input("Enter your N.I.C_ Number : ")
-    address= input("Enter your address:")
+    address= input("Enter your address :")
 
     user_id = f"U_{ID}"
     acc_no = ID
@@ -152,7 +152,7 @@ def admin_menu():
         print("5. Transaction History")
         print("6. Exit")
 
-        choice = input("Enter your choice (1-6): ")
+        choice = input("Enter your choice (1-6): \n ")
 
         if choice == '1':
             create_account()
@@ -185,7 +185,7 @@ def user_menu():
         print("4. Transaction History")
         print("5. Exit")
 
-        choice = input("Enter your choice (1-5): ")
+        choice = input("Enter your choice (1-5): \n")
 
         if choice == '1':
             deposit_money()
@@ -211,7 +211,7 @@ def bank_app():
         print("2. USER MENU")
         print("3. Exit")
 
-        choice = input("Enter your choice (1-3): ")
+        choice = input("Enter your choice (1-3): \n")
 
         if choice == '1':
             admin_menu()
