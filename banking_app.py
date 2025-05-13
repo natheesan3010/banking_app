@@ -83,8 +83,15 @@ def create_account():
     username = input("Enter the user Name : ")
     password = input("Enter the password : ")
     name = input("Account Holder Name : ")
+    
     nic = input("Enter your N.I.C_ Number : ")
+    if len(nic) != 12 or not nic.isdigit():
+        print("Invalid NIC Number. It must be 12 digits.")
+        return 
+    
     address = input("Enter your address : ")
+
+    contact = int(input("Enter your Contact Number : "))
 
     user_id = f"U_{ID}"
     acc_no = ID
@@ -98,12 +105,12 @@ def create_account():
     }
 
     with open("users.txt", "a") as f:
-        f.write(f"{username},{password},{user_id},{acc_no}\n")
+        f.write(f"{user_id},{username},{password},{acc_no}\n")
 
     print(f" Account created successfully! \n Account Number: {acc_no} \n user ID :{user_id}")
 
     with open("account.txt", "a") as file:
-        file.write(f"{acc_no},{user_id},{name},{nic},{address}\n")
+        file.write(f"{acc_no},{user_id},{name},{nic},{address},{contact }\n")
 
 
 def deposit_money():
