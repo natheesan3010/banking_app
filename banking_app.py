@@ -1,20 +1,32 @@
+
 # Mini Banking Application using Procedural Programming
 import random
 from datetime import datetime
 
-def show_current_date():
-    today=datetime.now().strftime("%y-%m-%d")
-    print(f"current time {today}")
-
 accounts = {}
 ID = random.randint(1000, 9999)
+
+def get_existing_usernames():
+    usernames = set()
+    try:
+        with open("users.txt", "r") as file:
+            for line in file:
+                data = line.strip().split(",")
+                if len(data) >= 1:
+                    usernames.add(data[0])
+    except FileNotFoundError:
+        pass
+    return usernames
 
 # Admin 
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "admin123"
 
-accounts = {}
+def show_current_date():
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    print(f"Current Date: {current_date}")
 
+# Load Accounts from File
 def load_accounts():
     try:
         with open("users.txt", "r") as user_file:
@@ -25,22 +37,14 @@ def load_accounts():
 
         with open("account.txt", "r") as acc_file:
             for line in acc_file:
-                parts = line.strip().split(",")
-                if len(parts) < 5:
-                    continue  # skip malformed lines
-                acc_no = int(parts[0])
-                user_id = parts[1]
-                name = parts[2]
-                nic = parts[3]
-                address = ",".join(parts[4:])
-
+                acc_no, user_id, name, nic, address, contact = line.strip().split(",")
+                acc_no = int(acc_no)
                 if acc_no in accounts:
                     accounts[acc_no]['name'] = name
-                    accounts[acc_no]['nic'] = nic
-                    accounts[acc_no]['address'] = address
                     accounts[acc_no]['balance'] = 0
     except FileNotFoundError:
         pass
+
 
 # Save balance in balances.txt file
 def save_balance():
@@ -70,8 +74,8 @@ def admin_login():
     password = input("Enter admin password: ")
 
     if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+        print(f"welcome to our bank {username} (Admin)")
         print("Admin login successful!")
-        print(f"Welcome to our bank {username} as a admin")
         return True
     else:
         print("Invalid admin credentials.")
@@ -96,17 +100,31 @@ def login_user():
 
 def create_account():
     global ID
-    username = input("Enter the user Name : ")
+
+    # Username availability check
+    existing_usernames = get_existing_usernames()
+    while True:
+        username = input("Enter the user Name : ")
+        if username in existing_usernames:
+            print("Username already taken. Try another.")
+        else:
+            break
+
     password = input("Enter the password : ")
     name = input("Account Holder Name : ")
-    
+
+    name = name.title()  # Title case
+
+    if not all(x.isalpha() or x.isspace() for x in name):
+        print("Invalid name. Only letters and spaces are allowed.")
+        return
+
     nic = input("Enter your N.I.C_ Number : ")
     if len(nic) != 12 or not nic.isdigit():
         print("Invalid NIC Number. It must be 12 digits.")
         return 
-    
-    address = input("Enter your address : ")
 
+    address = input("Enter your address : ")
     contact = int(input("Enter your Contact Number : "))
 
     user_id = f"U_{ID}"
@@ -121,14 +139,22 @@ def create_account():
     }
 
     with open("users.txt", "a") as f:
-        f.write(f"{user_id},{username},{password},{acc_no}\n")
-
-    print(f"Welcome to our bank {username} as a user")
-    print(f" Welcome {username} \n Account created successfully! \n Account Number: {acc_no} \n user ID :{user_id} \n ")
-   
+        f.write(f"{username},{password},{user_id},{acc_no}\n")
+    print(f"Welcome to our bank {username} (customer)\n")
+    print(f" Account created successfully! \n Account Number: {acc_no} \n user ID :{user_id}")
 
     with open("account.txt", "a") as file:
-        file.write(f"{acc_no},{user_id},{name},{nic},{address},{contact }\n")
+        file.write(f"{acc_no},{user_id},{name},{nic},{address},{contact}\n")
+
+
+    with open("users.txt", "a") as f:
+        f.write(f"{user_id},{username},{password},{acc_no}\n")
+    print(f"Welcome to our bank {username} (customer)\n")#E2
+    print(f" Account created successfully! \n Account Number: {acc_no} \n user ID :{user_id}")
+
+    with open("account.txt", "a") as file:
+        file.write(f"{acc_no},{user_id},{name},{nic},{address},{contact}\n")
+
 
 
 def deposit_money():
@@ -147,6 +173,37 @@ def deposit_money():
         print("Deposit successful.")
     except ValueError:
         print("Invalid input.")
+
+
+def transaction_type_summary():
+    acc_no = get_account()
+    if acc_no is None:
+        return
+
+    try:
+        deposit_count = 0
+        withdraw_count = 0
+        found = False
+
+        with open("transactions.txt", "r") as file:
+            for line in file:
+                parts = line.strip().split(",", 1)
+                if len(parts) == 2:
+                    trans_acc_no, description = parts
+                    if int(trans_acc_no) == acc_no:
+                        found = True
+                        if description.startswith("Deposited"):
+                            deposit_count += 1
+                        elif description.startswith("Withdrawal"):
+                            withdraw_count += 1
+
+        if found:
+            print(f"Deposits: {deposit_count}, Withdrawals: {withdraw_count}")
+        else:
+            print("No transactions found for this account.")
+    except FileNotFoundError:
+        print("Transaction file not found.")
+
 
 def withdraw_money():
     acc_no = get_account()
@@ -189,8 +246,9 @@ def admin_menu():
         print("3. Withdraw Money")
         print("4. Check Balance")
         print("5. Transaction History")
-        print("6.current time")
-        print("7. Exit")
+        print("6. Current Date")
+        print("7. Transaction Type Sumary")
+        print("8. Exit")
 
         choice = input(f"Enter your choice (1-6): \n ")
 
@@ -207,6 +265,8 @@ def admin_menu():
         elif choice == '6':
             show_current_date()
         elif choice == '7':
+            transaction_type_summary()
+        elif choice == '8':
             save_balance()
             print("Thank you for using the Mini Banking System.")
             break
@@ -219,14 +279,16 @@ def user_menu():
     if acc_no is None:
         return
 
+
     while True:
         print("\n-----USER MENU-----")
         print("1. Deposit Money")
         print("2. Withdraw Money")
         print("3. Check Balance")
         print("4. Transaction History")
-        print("5. current time")
-        print("6. Exit")
+        print("5. Current Date")
+        print("6. Transaction Type Sumary")
+        print("7. Exit")
 
         choice = input(f"Enter your choice (1-5): \n")
 
@@ -239,11 +301,12 @@ def user_menu():
         elif choice == '4':
             transaction_history()
         elif choice == '5':
+            show_current_date()
+        elif choice == '6':
+            transaction_type_summary()
+        elif choice == '7':
             save_balance()
             print("Thank you for using the Mini Banking System.")
-        elif choice == '6':
-            show_current_date()
-        elif choice == '7':
             break
         else:
             print("Invalid choice. Please try again.")
@@ -273,3 +336,4 @@ def bank_app():
 
 # Start app
 bank_app()
+
