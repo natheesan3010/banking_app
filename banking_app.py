@@ -1,5 +1,10 @@
 # Mini Banking Application using Procedural Programming
 import random
+from datetime import datetime
+
+def show_current_date():
+    today=datetime.now().strftime("%y-%m-%d")
+    print(f"current time {today}")
 
 accounts = {}
 ID = random.randint(1000, 9999)
@@ -8,7 +13,8 @@ ID = random.randint(1000, 9999)
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "admin123"
 
-# Load Accounts from File
+accounts = {}
+
 def load_accounts():
     try:
         with open("users.txt", "r") as user_file:
@@ -19,10 +25,19 @@ def load_accounts():
 
         with open("account.txt", "r") as acc_file:
             for line in acc_file:
-                acc_no, user_id, name, nic, address = line.strip().split(",")
-                acc_no = int(acc_no)
+                parts = line.strip().split(",")
+                if len(parts) < 5:
+                    continue  # skip malformed lines
+                acc_no = int(parts[0])
+                user_id = parts[1]
+                name = parts[2]
+                nic = parts[3]
+                address = ",".join(parts[4:])
+
                 if acc_no in accounts:
                     accounts[acc_no]['name'] = name
+                    accounts[acc_no]['nic'] = nic
+                    accounts[acc_no]['address'] = address
                     accounts[acc_no]['balance'] = 0
     except FileNotFoundError:
         pass
@@ -56,6 +71,7 @@ def admin_login():
 
     if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
         print("Admin login successful!")
+        print(f"Welcome to our bank {username} as a admin")
         return True
     else:
         print("Invalid admin credentials.")
@@ -107,7 +123,9 @@ def create_account():
     with open("users.txt", "a") as f:
         f.write(f"{user_id},{username},{password},{acc_no}\n")
 
-    print(f" Account created successfully! \n Account Number: {acc_no} \n user ID :{user_id}")
+    print(f"Welcome to our bank {username} as a user")
+    print(f" Welcome {username} \n Account created successfully! \n Account Number: {acc_no} \n user ID :{user_id} \n ")
+   
 
     with open("account.txt", "a") as file:
         file.write(f"{acc_no},{user_id},{name},{nic},{address},{contact }\n")
@@ -171,7 +189,8 @@ def admin_menu():
         print("3. Withdraw Money")
         print("4. Check Balance")
         print("5. Transaction History")
-        print("6. Exit")
+        print("6.current time")
+        print("7. Exit")
 
         choice = input(f"Enter your choice (1-6): \n ")
 
@@ -186,6 +205,8 @@ def admin_menu():
         elif choice == '5':
             transaction_history()
         elif choice == '6':
+            show_current_date()
+        elif choice == '7':
             save_balance()
             print("Thank you for using the Mini Banking System.")
             break
@@ -204,7 +225,8 @@ def user_menu():
         print("2. Withdraw Money")
         print("3. Check Balance")
         print("4. Transaction History")
-        print("5. Exit")
+        print("5. current time")
+        print("6. Exit")
 
         choice = input(f"Enter your choice (1-5): \n")
 
@@ -219,6 +241,9 @@ def user_menu():
         elif choice == '5':
             save_balance()
             print("Thank you for using the Mini Banking System.")
+        elif choice == '6':
+            show_current_date()
+        elif choice == '7':
             break
         else:
             print("Invalid choice. Please try again.")
