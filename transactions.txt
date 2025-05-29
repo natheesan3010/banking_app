@@ -1,2 +1,0 @@
-7334,Deposited: 6050.0
-7334,Withdrawal: 500.0
